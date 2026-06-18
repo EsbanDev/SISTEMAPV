@@ -12,6 +12,7 @@ import com.sistemapv.repository.RackRepository;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.time.LocalDateTime;
@@ -64,32 +65,54 @@ public class CajaService {
         movimientoRepository.save(movimiento);
     }
 
+    @Transactional
     public void ubicarEnRack(Usuario usuario, UbicarEnRackDTO dto) {
+
         Caja caja = cajaRepository.findByCodigoCaja(dto.getCodigoCaja())
                 .orElseThrow(() ->
                         new RecursoNoEncontradoException("Caja no encontrada"));
 
-        Rack rack = rackRepository.findByCodigoRack(dto.getCodigoRack())
+        Rack nuevoRack = rackRepository.findByCodigoRack(dto.getCodigoRack())
                 .orElseThrow(() ->
                         new RecursoNoEncontradoException("Rack no encontrado"));
 
-        if(rack.getCapacidadActual() >= rack.getCapacidadMaxima()){
+        Rack rackAnterior = caja.getRack();
+
+        // Si ya está en ese mismo rack, no hacer nada
+        if (rackAnterior != null &&
+                rackAnterior.getId().equals(nuevoRack.getId())) {
+            throw new RuntimeException("La caja ya se encuentra en ese rack");
+        }
+
+        // Validar capacidad del nuevo rack
+        if (nuevoRack.getCapacidadActual() >= nuevoRack.getCapacidadMaxima()) {
             throw new RuntimeException("Rack lleno");
         }
 
-        rack.setCapacidadActual(
-                rack.getCapacidadActual()+1
+        // Restar capacidad del rack anterior si existía
+        if (rackAnterior != null) {
+            rackAnterior.setCapacidadActual(
+                    rackAnterior.getCapacidadActual() - 1
+            );
+
+            rackRepository.save(rackAnterior);
+        }
+
+        // Sumar capacidad al nuevo rack
+        nuevoRack.setCapacidadActual(
+                nuevoRack.getCapacidadActual() + 1
         );
 
-        rackRepository.save(rack);
+        rackRepository.save(nuevoRack);
 
-        caja.setRack(rack);
+        // Actualizar ubicación de la caja
+        caja.setRack(nuevoRack);
 
         Movimiento movimiento = new Movimiento();
         movimiento.setTipoMov(TipoMov.TRASLADO);
         movimiento.setFecha(LocalDateTime.now());
         movimiento.setCaja(caja);
-        movimiento.setRack(rack);
+        movimiento.setRack(nuevoRack);
         movimiento.setUsuario(usuario);
 
         movimientoRepository.save(movimiento);

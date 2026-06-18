@@ -6,8 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="4450ba0f-32dc-436e-978c-4c62a76a1dbe" name="Changes" comment="Cambios a v2, no subir al main">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/sistemapv/config/WebConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/sistemapv/config/WebConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/sistemapv/security/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/sistemapv/security/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/sistemapv/service/CajaService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/sistemapv/service/CajaService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
